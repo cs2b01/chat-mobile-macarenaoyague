@@ -7,7 +7,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 import java.util.Map;
 import java.util.HashMap;
-
 import org.json.JSONObject;
 
 import com.android.volley.AuthFailureError;
@@ -56,42 +55,44 @@ public class LoginActivity extends AppCompatActivity {
 
         // 4. Sending json message to Server
         JsonObjectRequest request = new JsonObjectRequest(
-            Request.Method.POST,
-            "http://10.0.2.2:8080/authenticate",
-            jsonMessage,
-            new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    //TODO
-                    try {
-                        String message = response.getString("message");
-                        if(message.equals("Authorized")) {
-                            showMessage("Authenticated");
-                            Intent intent = new Intent(getActivity(), ChatActivity.class);
-                            startActivity(intent);
+                Request.Method.POST,
+                "http://10.0.2.2:8000/authenticate",
+                jsonMessage,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        //TODO
+                        try {
+                            String message = response.getString("message");
+                            if(message.equals("Authorized")) {
+                                showMessage("Authenticated");
+                                Intent intent = new Intent(getActivity(), ContactsActivity.class);
+                                intent.putExtra("user_id", response.getString("user_id"));
+                                intent.putExtra("username", response.getString("username"));
+                                startActivity(intent);
+                            }
+                            else {
+                                showMessage("Wrong username or password");
+                            }
+                            showMessage(response.toString());
+                        }catch (Exception e) {
+                            e.printStackTrace();
+                            showMessage(e.getMessage());
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                        if( error instanceof  AuthFailureError ){
+                            showMessage("Unauthorized");
                         }
                         else {
-                            showMessage("Wrong username or password");
+                            showMessage(error.getMessage());
                         }
-                        showMessage(response.toString());
-                    }catch (Exception e) {
-                        e.printStackTrace();
-                        showMessage(e.getMessage());
                     }
                 }
-            },
-            new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    error.printStackTrace();
-                    if( error instanceof  AuthFailureError ){
-                        showMessage("Unauthorized");
-                    }
-                    else {
-                        showMessage(error.getMessage());
-                    }
-                }
-            }
         );
 
         RequestQueue queue = Volley.newRequestQueue(this);
