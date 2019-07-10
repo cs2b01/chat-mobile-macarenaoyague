@@ -58,9 +58,12 @@ public class MyMessageAdapter extends RecyclerView.Adapter<MyMessageAdapter.View
             if(userFromId == this.userFromId){
                 holder.myLine.setText(mFirstLine);
                 holder.friendLine.setText("");
+                holder.friendLine.setVisibility(View.INVISIBLE);
             }else{
                 holder.myLine.setText("");
                 holder.friendLine.setText(mFirstLine);
+                holder.myLine.setVisibility(View.INVISIBLE);
+
             }
 
         }catch (JSONException e){

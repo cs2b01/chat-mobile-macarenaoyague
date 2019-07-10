@@ -1,6 +1,7 @@
 package cs2901.utec.chat_mobile;
 
 import android.app.Activity;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -36,14 +37,14 @@ public class MessageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
         String username = getIntent().getExtras().get("username").toString();
-        setTitle("@"+username);
+        setTitle(username);
         mRecyclerView = findViewById(R.id.main_recycler_view);
+        refresh();
     }
 
     @Override
     protected void onResume(){
         super.onResume();
-
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         getChats();
     }
@@ -55,7 +56,7 @@ public class MessageActivity extends AppCompatActivity {
     public void getChats(){
         final String userFromId = getIntent().getExtras().get("user_from_id").toString();
         String userToId = getIntent().getExtras().get("user_to_id").toString();
-        String url = "http://10.0.2.2:8000/chats/<user_from_id>/<user_to_id>";
+        String url = "http://10.0.2.2:8000/messages/<user_from_id>/<user_to_id>";
         url = url.replace("<user_from_id>", userFromId);
         url = url.replace("<user_to_id>", userToId);
         RequestQueue queue = Volley.newRequestQueue(this);
@@ -68,7 +69,7 @@ public class MessageActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            JSONArray data = response.getJSONArray("response");
+                            JSONArray data = response.getJSONArray("data");
                             int uID = Integer.parseInt(userFromId);
                             mAdapter = new MyMessageAdapter(data, getActivity(), uID);
                             mRecyclerView.setAdapter(mAdapter);
@@ -88,7 +89,7 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     public void postMessage(){
-        String url = "http://10.0.2.2:8000/messages";
+        String url = "http://10.0.2.2:8000/sendmessage";
         RequestQueue queue = Volley.newRequestQueue(this);
         Map<String, String> params = new HashMap();
         final String user_from_id = getIntent().getExtras().get("user_from_id").toString();
@@ -117,6 +118,16 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
         queue.add(jsonObjectRequest);
+    }
 
+    public void refresh(){
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getChats();
+                refresh();
+            }
+        }, 2000);
     }
 }
+

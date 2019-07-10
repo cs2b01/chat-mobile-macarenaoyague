@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@drawable/image"
     >
 
     <RelativeLayout
@@ -27,8 +28,10 @@
             android:id="@+id/btnSend"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=">>"
+            android:text="Send"
             android:onClick="onClickBtnSend"
+            android:textColor="#FFF"
+            android:background="@drawable/button"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             />
